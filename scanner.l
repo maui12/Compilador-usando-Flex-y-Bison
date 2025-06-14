@@ -31,10 +31,10 @@ id      {letter}({letter}|{digit})*
 "<"                    return MENOR;
 ">"                    return MAYOR;
 
-[0-9]+\.[0-9]+         { yylval.valorDecimal = atof(yytext); return NUMBER; }
-[0-9]+                 { yylval.valorEntero = atoi(yytext); return NUMBER; }
-\"[^\"]*\"             { yylval.valorString = strdup(yytext); return STRING_LITERAL; }
-[a-zA-Z_][a-zA-Z0-9_]* { yylval.identificador = strdup(yytext); return ID; }
+[0-9]+\.[0-9]+         { yylval.fval = atof(yytext); return NUMBER; }
+[0-9]+                 { yylval.ival = atoi(yytext); return NUMBER; }
+\"[^\"]*\"             { yylval.sval = strdup(yytext); return STRING_LITERAL; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.sval = strdup(yytext); return ID; }
 
 "="                    return '=';
 "+"                    return '+';

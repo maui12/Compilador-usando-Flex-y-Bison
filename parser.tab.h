@@ -54,24 +54,22 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NUMBER = 258,                  /* NUMBER  */
-    ID = 259,                      /* ID  */
-    STRING_LITERAL = 260,          /* STRING_LITERAL  */
-    INT = 261,                     /* INT  */
-    FLOAT = 262,                   /* FLOAT  */
-    STRING = 263,                  /* STRING  */
-    IF = 264,                      /* IF  */
-    ELSE = 265,                    /* ELSE  */
-    WHILE = 266,                   /* WHILE  */
-    IGUAL = 267,                   /* IGUAL  */
-    DIFERENTE = 268,               /* DIFERENTE  */
-    MENOR = 269,                   /* MENOR  */
-    MAYOR = 270,                   /* MAYOR  */
-    MENOR_IGUAL = 271,             /* MENOR_IGUAL  */
-    MAYOR_IGUAL = 272,             /* MAYOR_IGUAL  */
-    PRINT = 273,                   /* PRINT  */
-    READ = 274,                    /* READ  */
-    LOWER_THAN_ELSE = 275          /* LOWER_THAN_ELSE  */
+    IDENTIFIER = 258,              /* IDENTIFIER  */
+    NUMBER = 259,                  /* NUMBER  */
+    WHILE = 260,                   /* WHILE  */
+    IF = 261,                      /* IF  */
+    ELSE = 262,                    /* ELSE  */
+    PRINT = 263,                   /* PRINT  */
+    TRUE = 264,                    /* TRUE  */
+    FALSE = 265,                   /* FALSE  */
+    VAR = 266,                     /* VAR  */
+    EQUAL = 267,                   /* EQUAL  */
+    NOT_EQUAL = 268,               /* NOT_EQUAL  */
+    LESS = 269,                    /* LESS  */
+    GREATER = 270,                 /* GREATER  */
+    LESS_EQUAL = 271,              /* LESS_EQUAL  */
+    GREATER_EQUAL = 272,           /* GREATER_EQUAL  */
+    ASSIGN = 273                   /* ASSIGN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -80,14 +78,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 29 "parser.y"
+#line 14 "parser.y"
 
-    int valorEntero;
-    float valorDecimal;
-    char* valorString;
-    char* identificador;
+    int ival;
+    char *sval;
+    struct ASTNode *node;
 
-#line 91 "parser.tab.h"
+#line 88 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

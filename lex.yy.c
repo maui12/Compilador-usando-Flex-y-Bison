@@ -849,23 +849,23 @@ return MAYOR;
 case 17:
 YY_RULE_SETUP
 #line 34 "scanner.l"
-{ yylval.valorDecimal = atof(yytext); return NUMBER; }
+{ yylval.fval = atof(yytext); return NUMBER; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 35 "scanner.l"
-{ yylval.valorEntero = atoi(yytext); return NUMBER; }
+{ yylval.ival = atoi(yytext); return NUMBER; }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
 #line 36 "scanner.l"
-{ yylval.valorString = strdup(yytext); return STRING_LITERAL; }
+{ yylval.sval = strdup(yytext); return STRING_LITERAL; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 37 "scanner.l"
-{ yylval.identificador = strdup(yytext); return ID; }
+{ yylval.sval = strdup(yytext); return ID; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
