@@ -59,7 +59,19 @@ extern int yydebug;
     STRING_LITERAL = 260,          /* STRING_LITERAL  */
     INT = 261,                     /* INT  */
     FLOAT = 262,                   /* FLOAT  */
-    STRING = 263                   /* STRING  */
+    STRING = 263,                  /* STRING  */
+    IF = 264,                      /* IF  */
+    ELSE = 265,                    /* ELSE  */
+    WHILE = 266,                   /* WHILE  */
+    IGUAL = 267,                   /* IGUAL  */
+    DIFERENTE = 268,               /* DIFERENTE  */
+    MENOR = 269,                   /* MENOR  */
+    MAYOR = 270,                   /* MAYOR  */
+    MENOR_IGUAL = 271,             /* MENOR_IGUAL  */
+    MAYOR_IGUAL = 272,             /* MAYOR_IGUAL  */
+    PRINT = 273,                   /* PRINT  */
+    READ = 274,                    /* READ  */
+    LOWER_THAN_ELSE = 275          /* LOWER_THAN_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -75,7 +87,7 @@ union YYSTYPE
     char* valorString;
     char* identificador;
 
-#line 79 "parser.tab.h"
+#line 91 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
