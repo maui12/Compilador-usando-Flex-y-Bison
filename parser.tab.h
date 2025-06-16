@@ -54,24 +54,28 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NUMBER = 258,                  /* NUMBER  */
-    ID = 259,                      /* ID  */
-    STRING_LITERAL = 260,          /* STRING_LITERAL  */
-    INT = 261,                     /* INT  */
-    FLOAT = 262,                   /* FLOAT  */
-    STRING = 263,                  /* STRING  */
-    IF = 264,                      /* IF  */
-    ELSE = 265,                    /* ELSE  */
-    WHILE = 266,                   /* WHILE  */
-    IGUAL = 267,                   /* IGUAL  */
-    DIFERENTE = 268,               /* DIFERENTE  */
-    MENOR = 269,                   /* MENOR  */
-    MAYOR = 270,                   /* MAYOR  */
-    MENOR_IGUAL = 271,             /* MENOR_IGUAL  */
-    MAYOR_IGUAL = 272,             /* MAYOR_IGUAL  */
-    PRINT = 273,                   /* PRINT  */
-    READ = 274,                    /* READ  */
-    LOWER_THAN_ELSE = 275          /* LOWER_THAN_ELSE  */
+    ENTERO = 258,                  /* ENTERO  */
+    FLOTANTE = 259,                /* FLOTANTE  */
+    CADENA = 260,                  /* CADENA  */
+    SI = 261,                      /* SI  */
+    SINO = 262,                    /* SINO  */
+    MIENTRAS = 263,                /* MIENTRAS  */
+    IMPRIMIR = 264,                /* IMPRIMIR  */
+    LEER = 265,                    /* LEER  */
+    ID = 266,                      /* ID  */
+    ENTERO_LIT = 267,              /* ENTERO_LIT  */
+    FLOTANTE_LIT = 268,            /* FLOTANTE_LIT  */
+    CADENA_LIT = 269,              /* CADENA_LIT  */
+    AND = 270,                     /* AND  */
+    OR = 271,                      /* OR  */
+    NOT = 272,                     /* NOT  */
+    IGUAL = 273,                   /* IGUAL  */
+    NO_IGUAL = 274,                /* NO_IGUAL  */
+    MENOR = 275,                   /* MENOR  */
+    MAYOR = 276,                   /* MAYOR  */
+    MENOR_IGUAL = 277,             /* MENOR_IGUAL  */
+    MAYOR_IGUAL = 278,             /* MAYOR_IGUAL  */
+    ASSIGN = 279                   /* ASSIGN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -80,14 +84,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 29 "parser.y"
+#line 30 "parser.y"
 
-    int valorEntero;
-    float valorDecimal;
-    char* valorString;
-    char* identificador;
+    int entero;
+    float flotante;
+    char* cadena;
+    struct NodoAST* nodo;
 
-#line 91 "parser.tab.h"
+#line 95 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

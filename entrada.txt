@@ -1,5 +1,23 @@
-int a =10;
-int b= 30;
-if(a>b){a=0;} else{b=b+6;};
-print(a);
-print(b);
+entero edad;
+flotante precio;
+cadena nombre;
+
+edad = 25;
+precio = 99.95;
+nombre = "Juan";
+
+imprimir(edad);
+imprimir(precio);
+imprimir(nombre);
+
+si (edad > 20) {
+    imprimir("Eres mayor de 20");
+} sino {
+    imprimir("Eres menor de 20");
+}
+
+entero contador = 0;
+mientras (contador < 5) {
+    imprimir(contador);
+    contador = contador + 1;
+}

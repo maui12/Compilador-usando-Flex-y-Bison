@@ -1,191 +1,241 @@
 %{
+#include "ast.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum { TIPO_ENTERO, TIPO_DECIMAL, TIPO_STRING } TipoVariable;
-
-typedef struct {
-    char nombre[32];
-    TipoVariable tipo;
-    union {
-        int entero;
-        float decimal;
-        char string[128];
-    };
-} Variable;
-
-Variable tablaSimbolos[100];
-int cantidadVariables = 0;
-
-int yylex(void);
 void yyerror(const char *s);
+extern int yylex();
 
-Variable* buscarVariable(const char* nombre);
-void agregarVariable(const char* nombre, TipoVariable tipo);
+NodoAST* raiz_ast = NULL;
+
+#define MAX_VARS 100
+static Simbolo tabla_simbolos[MAX_VARS];
+static int num_simbolos = 0;
+
+void imprimir_valor(Simbolo* s) {
+    if (s->tipo == TIPO_ENTERO) {
+        printf("%d\n", s->valor.entero);
+    } else if (s->tipo == TIPO_FLOTANTE) {
+        printf("%f\n", s->valor.flotante);
+    } else if (s->tipo == TIPO_CADENA) {
+        printf("%s\n", s->valor.cadena);
+    }
+}
+
+int ejecutar = 1;
+int ultima_condicion = 0;
 %}
 
 %union {
-    int valorEntero;
-    float valorDecimal;
-    char* valorString;
-    char* identificador;
+    int entero;
+    float flotante;
+    char* cadena;
+    struct NodoAST* nodo;
 }
 
-%token <valorEntero> NUMBER
-%token <identificador> ID
-%token <valorString> STRING_LITERAL
-%token INT FLOAT STRING
-%token IF ELSE WHILE
-%token IGUAL DIFERENTE MENOR MAYOR MENOR_IGUAL MAYOR_IGUAL
-%token PRINT READ
+/* Tokens */
+%token <cadena> ENTERO FLOTANTE CADENA SI SINO MIENTRAS IMPRIMIR LEER ID
+%token <entero> ENTERO_LIT
+%token <flotante> FLOTANTE_LIT
+%token <cadena> CADENA_LIT
+%token AND OR NOT
+%token IGUAL NO_IGUAL MENOR MAYOR MENOR_IGUAL MAYOR_IGUAL
+%token ASSIGN
 
-%type <valorEntero> expr condicion
+/* Precedencia */
+%left OR
+%left AND
+%right NOT
+%left '+' '-'
+%left '*' '/'
+%left IGUAL NO_IGUAL MENOR MAYOR MENOR_IGUAL MAYOR_IGUAL
 
-%nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
-
-%%
-
-entrada:
-    /* vacío */
-  | entrada linea
-;
-
-linea:
-    expr ';' { printf("Resultado válido\n"); }
-  | declaracion ';'
-  | asignacion ';'
-  | funcion_io ';'
-  | sentencia_control
-  | sentencia_control ';'
-;
-
-asignacion:
-    ID '=' expr {
-        Variable* v = buscarVariable($1);
-        if (v) {
-            if (v->tipo == TIPO_ENTERO)
-                v->entero = $3;
-            else
-                yyerror("Tipo no compatible para asignación");
-        } else {
-            yyerror("Variable no declarada");
-        }
-    }
-;
-
-declaracion:
-    INT ID '=' NUMBER {
-        agregarVariable($2, TIPO_ENTERO);
-        Variable* v = buscarVariable($2);
-        if (v) v->entero = $4;
-        printf("Declarada variable int %s = %d\n", $2, $4);
-    }
-  | FLOAT ID '=' NUMBER {
-        agregarVariable($2, TIPO_DECIMAL);
-        Variable* v = buscarVariable($2);
-        if (v) v->decimal = $4;
-        printf("Declarada variable float %s = %d\n", $2, $4);
-    }
-  | STRING ID '=' STRING_LITERAL {
-        agregarVariable($2, TIPO_STRING);
-        Variable* v = buscarVariable($2);
-        if (v) strcpy(v->string, $4);
-        printf("Declarada variable string %s = %s\n", $2, $4);
-    }
-;
-
-sentencia_control:
-    IF '(' condicion ')' bloque %prec LOWER_THAN_ELSE
-  | IF '(' condicion ')' bloque ELSE bloque
-  | WHILE '(' condicion ')' bloque
-;
-
-bloque:
-    '{' entrada '}'
-;
-
-funcion_io:
-    PRINT '(' expr ')' {
-        printf("Salida: %d\n", $3);
-    }
-  | READ '(' ID ')' {
-        printf("Ingrese valor para %s: ", $3);
-        int valor;
-        scanf("%d", &valor);
-        Variable* v = buscarVariable($3);
-        if (v) v->entero = valor;
-        else printf("Variable no declarada\n");
-    }
-;
-
-condicion:
-    expr IGUAL expr           { $$ = ($1 == $3); }
-  | expr DIFERENTE expr       { $$ = ($1 != $3); }
-  | expr MENOR expr           { $$ = ($1 < $3); }
-  | expr MAYOR expr           { $$ = ($1 > $3); }
-  | expr MENOR_IGUAL expr     { $$ = ($1 <= $3); }
-  | expr MAYOR_IGUAL expr     { $$ = ($1 >= $3); }
-;
-
-expr:
-    expr '+' expr   { $$ = $1 + $3; }
-  | expr '-' expr   { $$ = $1 - $3; }
-  | expr '*' expr   { $$ = $1 * $3; }
-  | expr '/' expr   {
-        if ($3 == 0) {
-            yyerror("División por cero");
-            $$ = 0;
-        } else {
-            $$ = $1 / $3;
-        }
-    }
-  | NUMBER          { $$ = $1; }
-  | ID {
-        Variable* v = buscarVariable($1);
-        if (v) {
-            if (v->tipo == TIPO_ENTERO)
-                $$ = v->entero;
-            else {
-                yyerror("Tipo no compatible en expresión (solo int)");
-                $$ = 0;
-            }
-        } else {
-            yyerror("Variable no declarada");
-            $$ = 0;
-        }
-    }
-;
+/* Tipos para no terminales */
+%type <nodo> programa lista_declaraciones declaracion expresion condicion
+%type <nodo> declaracion_entero declaracion_flotante declaracion_cadena
+%type <nodo> asignacion si mientras imprimir leer bloque
+%type <nodo> termino factor
 
 %%
 
-// Funciones auxiliares
+programa: lista_declaraciones { raiz_ast = $1; }
+        ;
+
+lista_declaraciones: 
+    declaracion 
+    | lista_declaraciones declaracion { $$ = crear_nodo(';', $1, $2, TIPO_DESCONOCIDO); }
+    ;
+
+declaracion: 
+    declaracion_entero ';' { $$ = $1; }
+    | declaracion_flotante ';' { $$ = $1; }
+    | declaracion_cadena ';' { $$ = $1; }
+    | asignacion ';' { $$ = $1; }
+    | si
+    | mientras
+    | imprimir ';' { $$ = $1; }
+    | leer ';' { $$ = $1; }
+    | bloque
+    ;
+
+declaracion_entero: ENTERO ID { 
+    $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_ENTERO), NULL, TIPO_ENTERO);
+    agregar_simbolo($2, TIPO_ENTERO);
+}
+;
+
+declaracion_flotante: FLOTANTE ID { 
+    $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_FLOTANTE), NULL, TIPO_FLOTANTE);
+    agregar_simbolo($2, TIPO_FLOTANTE);
+}
+;
+
+declaracion_cadena: CADENA ID { 
+    $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_CADENA), NULL, TIPO_CADENA);
+    agregar_simbolo($2, TIPO_CADENA);
+}
+;
+
+asignacion: ID ASSIGN expresion { 
+    $$ = crear_nodo('=', crear_hoja(ID, $1, TIPO_DESCONOCIDO), $3, TIPO_DESCONOCIDO); 
+}
+;
+
+si: SI '(' condicion ')' bloque { 
+    $$ = crear_nodo(SI, $3, $5, TIPO_DESCONOCIDO); 
+    ultima_condicion = evaluar_condicion($3);
+    ejecutar = ultima_condicion;
+}
+ | SI '(' condicion ')' bloque SINO bloque { 
+    $$ = crear_nodo(SI, $3, $5, TIPO_DESCONOCIDO);
+    $$->extra = $7;
+    ultima_condicion = evaluar_condicion($3);
+    ejecutar = ultima_condicion;
+}
+;
+
+mientras: MIENTRAS '(' condicion ')' bloque { 
+    $$ = crear_nodo(MIENTRAS, $3, $5, TIPO_DESCONOCIDO); 
+}
+;
+
+bloque: '{' lista_declaraciones '}' { $$ = $2; }
+      | '{' '}' { $$ = NULL; }
+      ;
+
+imprimir: IMPRIMIR '(' expresion ')' {
+    if (ejecutar) {
+        if ($3->tipo_nodo == ID) {
+            Simbolo* s = buscar_simbolo($3->nombre);
+            if (s) imprimir_valor(s);
+        } else if ($3->tipo_nodo == ENTERO_LIT) {
+            printf("%d\n", $3->valor.entero);
+        } else if ($3->tipo_nodo == FLOTANTE_LIT) {
+            printf("%f\n", $3->valor.flotante);
+        } else if ($3->tipo_nodo == CADENA_LIT) {
+            printf("%s\n", $3->valor.cadena);
+        }
+    }
+    $$ = crear_nodo(IMPRIMIR, $3, NULL, TIPO_DESCONOCIDO);
+}
+;
+
+leer: LEER ID { 
+    $$ = crear_nodo(LEER, crear_hoja(ID, $2, TIPO_DESCONOCIDO), NULL, TIPO_DESCONOCIDO); 
+    Simbolo* s = buscar_simbolo($2);
+    if (!s) {
+        fprintf(stderr, "Error: Variable '%s' no declarada\n", $2);
+        exit(EXIT_FAILURE);
+    }
+    if (ejecutar) {
+        if (s->tipo == TIPO_ENTERO) {
+            scanf("%d", &s->valor.entero);
+        } else if (s->tipo == TIPO_FLOTANTE) {
+            scanf("%f", &s->valor.flotante);
+        } else if (s->tipo == TIPO_CADENA) {
+            char buffer[256];
+            scanf("%255s", buffer);
+            if (s->valor.cadena) free(s->valor.cadena);
+            s->valor.cadena = strdup(buffer);
+        }
+    }
+}
+;
+
+condicion: expresion IGUAL expresion { $$ = crear_nodo(IGUAL, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion NO_IGUAL expresion { $$ = crear_nodo(NO_IGUAL, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion MENOR expresion { $$ = crear_nodo(MENOR, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion MAYOR expresion { $$ = crear_nodo(MAYOR, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion MENOR_IGUAL expresion { $$ = crear_nodo(MENOR_IGUAL, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion MAYOR_IGUAL expresion { $$ = crear_nodo(MAYOR_IGUAL, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion AND expresion { $$ = crear_nodo(AND, $1, $3, TIPO_DESCONOCIDO); }
+         | expresion OR expresion { $$ = crear_nodo(OR, $1, $3, TIPO_DESCONOCIDO); }
+         | NOT expresion { $$ = crear_nodo(NOT, $2, NULL, TIPO_DESCONOCIDO); }
+         | expresion { $$ = $1; }
+         ;
+
+expresion: expresion '+' termino { $$ = crear_nodo('+', $1, $3, TIPO_DESCONOCIDO); }
+         | expresion '-' termino { $$ = crear_nodo('-', $1, $3, TIPO_DESCONOCIDO); }
+         | termino { $$ = $1; }
+         ;
+
+termino: termino '*' factor { $$ = crear_nodo('*', $1, $3, TIPO_DESCONOCIDO); }
+       | termino '/' factor { $$ = crear_nodo('/', $1, $3, TIPO_DESCONOCIDO); }
+       | factor { $$ = $1; }
+       ;
+
+factor: '(' expresion ')' { $$ = $2; }
+      | ENTERO_LIT { 
+          $$ = crear_hoja(ENTERO_LIT, NULL, TIPO_ENTERO);
+          $$->valor.entero = $1;
+        }
+      | FLOTANTE_LIT { 
+          $$ = crear_hoja(FLOTANTE_LIT, NULL, TIPO_FLOTANTE);
+          $$->valor.flotante = $1;
+        }
+      | CADENA_LIT { $$ = crear_hoja(CADENA_LIT, $1, TIPO_CADENA); }
+      | ID { $$ = crear_hoja(ID, $1, TIPO_DESCONOCIDO); }
+      ;
+
+%%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error sintactico: %s\n", s);
+    extern char *yytext;
+    fprintf(stderr, "Error sintáctico en '%s': %s\n", yytext, s);
 }
 
 int main() {
-    printf("Ingrese expresiones:\n");
+    raiz_ast = NULL;
     yyparse();
+    
+    if (raiz_ast) {
+        ejecutar_ast(raiz_ast);
+        liberar_ast(raiz_ast);
+    }
+    
     return 0;
 }
 
-Variable* buscarVariable(const char* nombre) {
-    for (int i = 0; i < cantidadVariables; i++) {
-        if (strcmp(tablaSimbolos[i].nombre, nombre) == 0)
-            return &tablaSimbolos[i];
+Simbolo* buscar_simbolo(const char* nombre) {
+    for (int i = 0; i < num_simbolos; i++) {
+        if (strcmp(tabla_simbolos[i].nombre, nombre) == 0) {
+            return &tabla_simbolos[i];
+        }
     }
     return NULL;
 }
 
-void agregarVariable(const char* nombre, TipoVariable tipo) {
-    if (buscarVariable(nombre)) {
-        printf("Error: la variable '%s' ya fue declarada\n", nombre);
-        return;
+void agregar_simbolo(const char* nombre, TipoDato tipo) {
+    if (buscar_simbolo(nombre) {
+        fprintf(stderr, "Error: Variable '%s' ya declarada\n", nombre);
+        exit(EXIT_FAILURE);
     }
-    strcpy(tablaSimbolos[cantidadVariables].nombre, nombre);
-    tablaSimbolos[cantidadVariables].tipo = tipo;
-    cantidadVariables++;
+    if (num_simbolos >= MAX_VARS) {
+        fprintf(stderr, "Error: Tabla de símbolos llena\n");
+        exit(EXIT_FAILURE);
+    }
+    tabla_simbolos[num_simbolos].nombre = strdup(nombre);
+    tabla_simbolos[num_simbolos].tipo = tipo;
+    num_simbolos++;
 }

@@ -1,56 +1,51 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "parser.tab.h"
+#include "ast.h"
+#include <string.h>
 %}
 
-digit   [0-9]
-letter  [a-zA-Z_]
-id      {letter}({letter}|{digit})*
+%option noyywrap
+
+digito    [0-9]
+letra     [a-zA-Z]
+id        {letra}({letra}|{digito})*
 
 %%
 
-[ \t\r]+               ; // ignorar espacios
-\n ;  //Ignora los saltos de línea
+"entero"       { return ENTERO; }
+"flotante"    { return FLOTANTE; }
+"cadena"      { return CADENA; }
+"si"          { return SI; }
+"sino"        { return SINO; }
+"mientras"    { return MIENTRAS; }
+"imprimir"    { return IMPRIMIR; }
+"leer"        { return LEER; }
 
-"int"                  return INT;
-"float"                return FLOAT;
-"string"               return STRING;
+"=="          { return IGUAL; }
+"!="          { return NO_IGUAL; }
+"<"           { return MENOR; }
+">"           { return MAYOR; }
+"<="          { return MENOR_IGUAL; }
+">="          { return MAYOR_IGUAL; }
 
-"if"                   return IF;
-"else"                 return ELSE;
-"while"                return WHILE;
-"print"                return PRINT;
-"input"                return READ;
+"+"           { return '+'; }
+"-"           { return '-'; }
+"*"           { return '*'; }
+"/"           { return '/'; }
+"="           { return '='; }
+";"           { return ';'; }
+","           { return ','; }
+"("           { return '('; }
+")"           { return ')'; }
+"{"           { return '{'; }
+"}"           { return '}'; }
 
-"=="                   return IGUAL;
-"!="                   return DIFERENTE;
-"<="                   return MENOR_IGUAL;
-">="                   return MAYOR_IGUAL;
-"<"                    return MENOR;
-">"                    return MAYOR;
+{digito}+     { yylval.entero = atoi(yytext); return ENTERO_LIT; }
+{digito}+"."{digito}*  { yylval.flotante = atof(yytext); return FLOTANTE_LIT; }
+\"[^"]*\"    { yylval.cadena = strdup(yytext); return CADENA_LIT; }
+{id}          { yylval.cadena = strdup(yytext); return ID; }
 
-[0-9]+\.[0-9]+         { yylval.valorDecimal = atof(yytext); return NUMBER; }
-[0-9]+                 { yylval.valorEntero = atoi(yytext); return NUMBER; }
-\"[^\"]*\"             { yylval.valorString = strdup(yytext); return STRING_LITERAL; }
-[a-zA-Z_][a-zA-Z0-9_]* { yylval.identificador = strdup(yytext); return ID; }
-
-"="                    return '=';
-"+"                    return '+';
-"-"                    return '-';
-"*"                    return '*';
-"/"                    return '/';
-"("                    return '(';
-")"                    return ')';
-"{"                    return '{';
-"}"                    return '}';
-";"                    return ';';
-
-.                      return yytext[0];
+[ \t\n]       ; /* Ignorar espacios */
+.             { printf("Error léxico: caracter '%s' no reconocido\n", yytext); }
 
 %%
-
-int yywrap(void) {
-    return 1;
-}
