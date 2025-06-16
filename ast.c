@@ -59,14 +59,25 @@ Simbolo* buscar_simbolo(const char* nombre) {
 }
 
 void agregar_simbolo(const char* nombre, TipoDato tipo) {
-    if (buscar_simbolo(nombre)) {
-        fprintf(stderr, "Error: Variable '%s' ya declarada\n", nombre);
-        exit(EXIT_FAILURE);
+    Simbolo* existente = buscar_simbolo(nombre);
+    if (existente) {
+        // Variable ya existe, actualiza el tipo si es diferente
+        if (existente->tipo != tipo) {
+            existente->tipo = tipo;
+            // Limpia el valor anterior si es necesario
+            if (existente->tipo == TIPO_CADENA && existente->valor.cadena) {
+                free(existente->valor.cadena);
+                existente->valor.cadena = NULL;
+            }
+        }
+        return;  // No es un error, solo retorna
     }
+    
     if (num_simbolos >= MAX_VARS) {
         fprintf(stderr, "Error: Tabla de símbolos llena\n");
         exit(EXIT_FAILURE);
     }
+    
     tabla_simbolos[num_simbolos].nombre = strdup(nombre);
     tabla_simbolos[num_simbolos].tipo = tipo;
     num_simbolos++;

@@ -69,9 +69,14 @@ declaracion:
     | leer ';' { $$ = $1; }
     | bloque;
 
-declaracion_entero: ENTERO ID { 
-    $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_ENTERO), NULL, TIPO_ENTERO);
-    agregar_simbolo($2, TIPO_ENTERO);
+declaracion_entero: ENTERO ID {
+    Simbolo* existente = buscar_simbolo($2);
+    if (!existente) {
+        $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_ENTERO), NULL, TIPO_ENTERO);
+        agregar_simbolo($2, TIPO_ENTERO);
+    } else {
+        $$ = NULL; // Variable ya existe, no crear nuevo nodo
+    }
 };
 
 declaracion_flotante: FLOTANTE ID { 
