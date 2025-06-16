@@ -1,3 +1,4 @@
-flotante x;
-x = 5/3;
-imprimir(x);
+entero edad;
+edad = 11;
+edad = edad - 100;
+imprimirKeye(edad);

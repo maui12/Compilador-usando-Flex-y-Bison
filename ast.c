@@ -98,6 +98,11 @@ float evaluar_expresion(NodoAST* expr) {
             }
             return evaluar_expresion(expr->izquierda) / divisor;
         }
+        case POTENCIA: {
+            int base = (int)evaluar_expresion(expr->izquierda);
+            int exponente = (int)evaluar_expresion(expr->derecha);
+            return (float)calcular_potencia(base, exponente);
+        }
         case ENTERO_LIT: return (float)expr->valor.entero;
         case FLOTANTE_LIT: return expr->valor.flotante;
         case ID: {
@@ -130,6 +135,11 @@ int evaluar_condicion(NodoAST* cond) {
         case AND: return evaluar_condicion(cond->izquierda) && evaluar_condicion(cond->derecha);
         case OR: return evaluar_condicion(cond->izquierda) || evaluar_condicion(cond->derecha);
         case NOT: return !evaluar_condicion(cond->izquierda);
+        case POTENCIA: {
+            int base = (int)evaluar_expresion(cond->izquierda);
+            int exponente = (int)evaluar_expresion(cond->derecha);
+            return (float)calcular_potencia(base, exponente);
+        }
         default: return evaluar_expresion(cond) != 0;
     }
 }
@@ -147,23 +157,22 @@ void ejecutar_ast(NodoAST* nodo) {
             agregar_simbolo(nodo->izquierda->nombre, nodo->tipo_dato);
             break;
             
-        case '=':
-            {
-                Simbolo* s = buscar_simbolo(nodo->izquierda->nombre);
-                if (!s) {
-                    fprintf(stderr, "Error: Variable '%s' no declarada\n", nodo->izquierda->nombre);
-                    exit(EXIT_FAILURE);
-                }
-
-                float resultado = evaluar_expresion(nodo->derecha);
-                
-                if (s->tipo == TIPO_ENTERO) {
-                    s->valor.entero = (int)resultado;
-                } else if (s->tipo == TIPO_FLOTANTE) {
-                    s->valor.flotante = resultado;
-                }
+        case '=': {
+            Simbolo* s = buscar_simbolo(nodo->izquierda->nombre);
+            if (!s) {
+                fprintf(stderr, "Error: Variable '%s' no declarada\n", nodo->izquierda->nombre);
+                exit(EXIT_FAILURE);
+            }
+            
+            float resultado = evaluar_expresion(nodo->derecha);
+            
+            if (s->tipo == TIPO_ENTERO) {
+                s->valor.entero = (int)resultado;
+            } else if (s->tipo == TIPO_FLOTANTE) {
+                s->valor.flotante = resultado;
             }
             break;
+        }
             
         case IMPRIMIR:
             if (nodo->izquierda) {
@@ -205,6 +214,39 @@ void ejecutar_ast(NodoAST* nodo) {
             }
             break;
             
+        case LEER: {
+            Simbolo* s = buscar_simbolo(nodo->izquierda->nombre);
+            if (!s) {
+                fprintf(stderr, "Error: Variable '%s' no declarada\n", nodo->izquierda->nombre);
+                exit(EXIT_FAILURE);
+            }
+            
+            printf("Ingrese valor para %s: ", nodo->izquierda->nombre);
+            fflush(stdout);
+            
+            if (s->tipo == TIPO_ENTERO) {
+                while (scanf("%d", &s->valor.entero) != 1) {
+                    printf("Entrada inválida. Ingrese un número entero: ");
+                    while (getchar() != '\n');
+                }
+            } 
+            else if (s->tipo == TIPO_FLOTANTE) {
+                while (scanf("%f", &s->valor.flotante) != 1) {
+                    printf("Entrada inválida. Ingrese un número flotante: ");
+                    while (getchar() != '\n');
+                }
+            } 
+            else if (s->tipo == TIPO_CADENA) {
+                char buffer[256];
+                scanf("%255s", buffer);
+                if (s->valor.cadena) free(s->valor.cadena);
+                s->valor.cadena = strdup(buffer);
+            }
+            
+            while (getchar() != '\n');  // Limpiar buffer de entrada
+            break;
+        }
+            
         default:
             ejecutar_ast(nodo->izquierda);
             ejecutar_ast(nodo->derecha);
@@ -233,10 +275,11 @@ int calcular_division(int a, int b) {
     return a / b;
 }
 
+//while potencia
 int calcular_potencia(int base, int exponente) {
     int resultado = 1;
     while (exponente > 0) {
-        resultado = calcular_multiplicacion(resultado, base);
+        resultado *= base;
         exponente--;
     }
     return resultado;

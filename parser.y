@@ -75,7 +75,7 @@ declaracion_entero: ENTERO ID {
         $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_ENTERO), NULL, TIPO_ENTERO);
         agregar_simbolo($2, TIPO_ENTERO);
     } else {
-        $$ = NULL; // Variable ya existe, no crear nuevo nodo
+        $$ = NULL;
     }
 };
 
@@ -129,33 +129,43 @@ imprimir: IMPRIMIR '(' expresion ')' {
             printf("%f\n", $3->valor.flotante);
         } else if ($3->tipo_nodo == CADENA_LIT) {
             printf("%s\n", $3->valor.cadena);
-        } else if ($3->tipo_nodo == POTENCIA) {
-            int base = evaluar_expresion($3->izquierda);
-            int exponente = evaluar_expresion($3->derecha);
-            printf("%d\n", calcular_potencia(base, exponente));
+        } else {
+            // Para expresiones complejas como la potencia
+            float resultado = evaluar_expresion($3);
+            printf("%d\n", (int)resultado);
         }
     }
     $$ = crear_nodo(IMPRIMIR, $3, NULL, TIPO_DESCONOCIDO);
 };
 
-leer: LEER ID { 
-    $$ = crear_nodo(LEER, crear_hoja(ID, $2, TIPO_DESCONOCIDO), NULL, TIPO_DESCONOCIDO); 
+leer: LEER ID {
+    $$ = crear_nodo(LEER, crear_hoja(ID, $2, TIPO_DESCONOCIDO), NULL, TIPO_DESCONOCIDO);
     Simbolo* s = buscar_simbolo($2);
     if (!s) {
         fprintf(stderr, "Error: Variable '%s' no declarada\n", $2);
         exit(EXIT_FAILURE);
     }
     if (ejecutar) {
+        printf("Ingrese valor para %s: ", $2);  // Mostrar prompt
+        fflush(stdout);  // Asegurar que se muestre inmediatamente
+        
         if (s->tipo == TIPO_ENTERO) {
-            scanf("%d", &s->valor.entero);
+            while (scanf("%d", &s->valor.entero) != 1) {
+                printf("Entrada inválida. Ingrese un número entero: ");
+                while (getchar() != '\n');  // Limpiar buffer
+            }
         } else if (s->tipo == TIPO_FLOTANTE) {
-            scanf("%f", &s->valor.flotante);
+            while (scanf("%f", &s->valor.flotante) != 1) {
+                printf("Entrada inválida. Ingrese un número flotante: ");
+                while (getchar() != '\n');
+            }
         } else if (s->tipo == TIPO_CADENA) {
             char buffer[256];
             scanf("%255s", buffer);
             if (s->valor.cadena) free(s->valor.cadena);
             s->valor.cadena = strdup(buffer);
         }
+        while (getchar() != '\n');  // Limpiar el buffer de entrada
     }
 };
 

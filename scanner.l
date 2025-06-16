@@ -17,7 +17,7 @@ id        {letra}({letra}|{digito})*
 "si"           { return SI; }
 "sino"         { return SINO; }
 "mientras"     { return MIENTRAS; }
-"imprimir"     { return IMPRIMIR; }
+"imprimirKeye"     { return IMPRIMIR; }
 "leer"         { return LEER; }
 "potencia"     { return POTENCIA; }
 
