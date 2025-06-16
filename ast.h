@@ -1,6 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
+#define MAX_VARS 100
+
 typedef enum {
     TIPO_ENTERO,
     TIPO_FLOTANTE,
@@ -39,5 +41,13 @@ void liberar_ast(NodoAST* nodo);
 void ejecutar_ast(NodoAST* nodo);
 int evaluar_condicion(NodoAST* cond);
 float evaluar_expresion(NodoAST* expr);
+
+/* Tabla de símbolos */
+Simbolo* buscar_simbolo(const char* nombre);
+void agregar_simbolo(const char* nombre, TipoDato tipo);
+
+/* Variables globales */
+extern Simbolo tabla_simbolos[];
+extern int num_simbolos;
 
 #endif

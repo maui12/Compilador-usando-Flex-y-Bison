@@ -74,8 +74,7 @@ extern int yydebug;
     MENOR = 275,                   /* MENOR  */
     MAYOR = 276,                   /* MAYOR  */
     MENOR_IGUAL = 277,             /* MENOR_IGUAL  */
-    MAYOR_IGUAL = 278,             /* MAYOR_IGUAL  */
-    ASSIGN = 279                   /* ASSIGN  */
+    MAYOR_IGUAL = 278              /* MAYOR_IGUAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -84,14 +83,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 30 "parser.y"
+#line 26 "parser.y"
 
     int entero;
     float flotante;
     char* cadena;
     struct NodoAST* nodo;
 
-#line 95 "parser.tab.h"
+#line 94 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

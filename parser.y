@@ -9,10 +9,6 @@ extern int yylex();
 
 NodoAST* raiz_ast = NULL;
 
-#define MAX_VARS 100
-static Simbolo tabla_simbolos[MAX_VARS];
-static int num_simbolos = 0;
-
 void imprimir_valor(Simbolo* s) {
     if (s->tipo == TIPO_ENTERO) {
         printf("%d\n", s->valor.entero);
@@ -34,16 +30,14 @@ int ultima_condicion = 0;
     struct NodoAST* nodo;
 }
 
-/* Tokens */
 %token <cadena> ENTERO FLOTANTE CADENA SI SINO MIENTRAS IMPRIMIR LEER ID
 %token <entero> ENTERO_LIT
 %token <flotante> FLOTANTE_LIT
 %token <cadena> CADENA_LIT
 %token AND OR NOT
 %token IGUAL NO_IGUAL MENOR MAYOR MENOR_IGUAL MAYOR_IGUAL
-%token ASSIGN
+%token '='
 
-/* Precedencia */
 %left OR
 %left AND
 %right NOT
@@ -51,7 +45,6 @@ int ultima_condicion = 0;
 %left '*' '/'
 %left IGUAL NO_IGUAL MENOR MAYOR MENOR_IGUAL MAYOR_IGUAL
 
-/* Tipos para no terminales */
 %type <nodo> programa lista_declaraciones declaracion expresion condicion
 %type <nodo> declaracion_entero declaracion_flotante declaracion_cadena
 %type <nodo> asignacion si mientras imprimir leer bloque
@@ -59,13 +52,11 @@ int ultima_condicion = 0;
 
 %%
 
-programa: lista_declaraciones { raiz_ast = $1; }
-        ;
+programa: lista_declaraciones { raiz_ast = $1; };
 
 lista_declaraciones: 
     declaracion 
-    | lista_declaraciones declaracion { $$ = crear_nodo(';', $1, $2, TIPO_DESCONOCIDO); }
-    ;
+    | lista_declaraciones declaracion { $$ = crear_nodo(';', $1, $2, TIPO_DESCONOCIDO); };
 
 declaracion: 
     declaracion_entero ';' { $$ = $1; }
@@ -76,31 +67,32 @@ declaracion:
     | mientras
     | imprimir ';' { $$ = $1; }
     | leer ';' { $$ = $1; }
-    | bloque
-    ;
+    | bloque;
 
 declaracion_entero: ENTERO ID { 
     $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_ENTERO), NULL, TIPO_ENTERO);
     agregar_simbolo($2, TIPO_ENTERO);
-}
-;
+};
 
 declaracion_flotante: FLOTANTE ID { 
     $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_FLOTANTE), NULL, TIPO_FLOTANTE);
     agregar_simbolo($2, TIPO_FLOTANTE);
-}
-;
+};
 
 declaracion_cadena: CADENA ID { 
     $$ = crear_nodo('D', crear_hoja(ID, $2, TIPO_CADENA), NULL, TIPO_CADENA);
     agregar_simbolo($2, TIPO_CADENA);
-}
-;
+};
 
-asignacion: ID ASSIGN expresion { 
-    $$ = crear_nodo('=', crear_hoja(ID, $1, TIPO_DESCONOCIDO), $3, TIPO_DESCONOCIDO); 
+asignacion: ID '=' expresion { 
+    $$ = crear_nodo('=', crear_hoja(ID, $1, TIPO_DESCONOCIDO), $3, TIPO_DESCONOCIDO);
+    /* Verificar que la variable existe */
+    Simbolo* s = buscar_simbolo($1);
+    if (!s) {
+        fprintf(stderr, "Error: Variable '%s' no declarada\n", $1);
+        exit(EXIT_FAILURE);
+    }
 }
-;
 
 si: SI '(' condicion ')' bloque { 
     $$ = crear_nodo(SI, $3, $5, TIPO_DESCONOCIDO); 
@@ -112,17 +104,14 @@ si: SI '(' condicion ')' bloque {
     $$->extra = $7;
     ultima_condicion = evaluar_condicion($3);
     ejecutar = ultima_condicion;
-}
-;
+};
 
 mientras: MIENTRAS '(' condicion ')' bloque { 
     $$ = crear_nodo(MIENTRAS, $3, $5, TIPO_DESCONOCIDO); 
-}
-;
+};
 
 bloque: '{' lista_declaraciones '}' { $$ = $2; }
-      | '{' '}' { $$ = NULL; }
-      ;
+      | '{' '}' { $$ = NULL; };
 
 imprimir: IMPRIMIR '(' expresion ')' {
     if (ejecutar) {
@@ -138,8 +127,7 @@ imprimir: IMPRIMIR '(' expresion ')' {
         }
     }
     $$ = crear_nodo(IMPRIMIR, $3, NULL, TIPO_DESCONOCIDO);
-}
-;
+};
 
 leer: LEER ID { 
     $$ = crear_nodo(LEER, crear_hoja(ID, $2, TIPO_DESCONOCIDO), NULL, TIPO_DESCONOCIDO); 
@@ -160,8 +148,7 @@ leer: LEER ID {
             s->valor.cadena = strdup(buffer);
         }
     }
-}
-;
+};
 
 condicion: expresion IGUAL expresion { $$ = crear_nodo(IGUAL, $1, $3, TIPO_DESCONOCIDO); }
          | expresion NO_IGUAL expresion { $$ = crear_nodo(NO_IGUAL, $1, $3, TIPO_DESCONOCIDO); }
@@ -172,18 +159,15 @@ condicion: expresion IGUAL expresion { $$ = crear_nodo(IGUAL, $1, $3, TIPO_DESCO
          | expresion AND expresion { $$ = crear_nodo(AND, $1, $3, TIPO_DESCONOCIDO); }
          | expresion OR expresion { $$ = crear_nodo(OR, $1, $3, TIPO_DESCONOCIDO); }
          | NOT expresion { $$ = crear_nodo(NOT, $2, NULL, TIPO_DESCONOCIDO); }
-         | expresion { $$ = $1; }
-         ;
+         | expresion { $$ = $1; };
 
 expresion: expresion '+' termino { $$ = crear_nodo('+', $1, $3, TIPO_DESCONOCIDO); }
          | expresion '-' termino { $$ = crear_nodo('-', $1, $3, TIPO_DESCONOCIDO); }
-         | termino { $$ = $1; }
-         ;
+         | termino { $$ = $1; };
 
 termino: termino '*' factor { $$ = crear_nodo('*', $1, $3, TIPO_DESCONOCIDO); }
        | termino '/' factor { $$ = crear_nodo('/', $1, $3, TIPO_DESCONOCIDO); }
-       | factor { $$ = $1; }
-       ;
+       | factor { $$ = $1; };
 
 factor: '(' expresion ')' { $$ = $2; }
       | ENTERO_LIT { 
@@ -195,8 +179,7 @@ factor: '(' expresion ')' { $$ = $2; }
           $$->valor.flotante = $1;
         }
       | CADENA_LIT { $$ = crear_hoja(CADENA_LIT, $1, TIPO_CADENA); }
-      | ID { $$ = crear_hoja(ID, $1, TIPO_DESCONOCIDO); }
-      ;
+      | ID { $$ = crear_hoja(ID, $1, TIPO_DESCONOCIDO); };
 
 %%
 
@@ -215,27 +198,4 @@ int main() {
     }
     
     return 0;
-}
-
-Simbolo* buscar_simbolo(const char* nombre) {
-    for (int i = 0; i < num_simbolos; i++) {
-        if (strcmp(tabla_simbolos[i].nombre, nombre) == 0) {
-            return &tabla_simbolos[i];
-        }
-    }
-    return NULL;
-}
-
-void agregar_simbolo(const char* nombre, TipoDato tipo) {
-    if (buscar_simbolo(nombre) {
-        fprintf(stderr, "Error: Variable '%s' ya declarada\n", nombre);
-        exit(EXIT_FAILURE);
-    }
-    if (num_simbolos >= MAX_VARS) {
-        fprintf(stderr, "Error: Tabla de símbolos llena\n");
-        exit(EXIT_FAILURE);
-    }
-    tabla_simbolos[num_simbolos].nombre = strdup(nombre);
-    tabla_simbolos[num_simbolos].tipo = tipo;
-    num_simbolos++;
 }

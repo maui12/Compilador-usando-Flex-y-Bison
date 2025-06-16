@@ -1,0 +1,1105 @@
+Grammar
+
+    0 $accept: programa $end
+
+    1 programa: lista_declaraciones
+
+    2 lista_declaraciones: declaracion
+    3                    | lista_declaraciones declaracion
+
+    4 declaracion: declaracion_entero ';'
+    5            | declaracion_flotante ';'
+    6            | declaracion_cadena ';'
+    7            | asignacion ';'
+    8            | si
+    9            | mientras
+   10            | imprimir ';'
+   11            | leer ';'
+   12            | bloque
+
+   13 declaracion_entero: ENTERO ID
+
+   14 declaracion_flotante: FLOTANTE ID
+
+   15 declaracion_cadena: CADENA ID
+
+   16 asignacion: ID '=' expresion
+
+   17 si: SI '(' condicion ')' bloque
+   18   | SI '(' condicion ')' bloque SINO bloque
+
+   19 mientras: MIENTRAS '(' condicion ')' bloque
+
+   20 bloque: '{' lista_declaraciones '}'
+   21       | '{' '}'
+
+   22 imprimir: IMPRIMIR '(' expresion ')'
+
+   23 leer: LEER ID
+
+   24 condicion: expresion IGUAL expresion
+   25          | expresion NO_IGUAL expresion
+   26          | expresion MENOR expresion
+   27          | expresion MAYOR expresion
+   28          | expresion MENOR_IGUAL expresion
+   29          | expresion MAYOR_IGUAL expresion
+   30          | expresion AND expresion
+   31          | expresion OR expresion
+   32          | NOT expresion
+   33          | expresion
+
+   34 expresion: expresion '+' termino
+   35          | expresion '-' termino
+   36          | termino
+
+   37 termino: termino '*' factor
+   38        | termino '/' factor
+   39        | factor
+
+   40 factor: '(' expresion ')'
+   41       | ENTERO_LIT
+   42       | FLOTANTE_LIT
+   43       | CADENA_LIT
+   44       | ID
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 17 18 19 22 40
+    ')' (41) 17 18 19 22 40
+    '*' (42) 37
+    '+' (43) 34
+    '-' (45) 35
+    '/' (47) 38
+    ';' (59) 4 5 6 7 10 11
+    '=' (61) 16
+    '{' (123) 20 21
+    '}' (125) 20 21
+    error (256)
+    ENTERO <cadena> (258) 13
+    FLOTANTE <cadena> (259) 14
+    CADENA <cadena> (260) 15
+    SI <cadena> (261) 17 18
+    SINO <cadena> (262) 18
+    MIENTRAS <cadena> (263) 19
+    IMPRIMIR <cadena> (264) 22
+    LEER <cadena> (265) 23
+    ID <cadena> (266) 13 14 15 16 23 44
+    ENTERO_LIT <entero> (267) 41
+    FLOTANTE_LIT <flotante> (268) 42
+    CADENA_LIT <cadena> (269) 43
+    AND (270) 30
+    OR (271) 31
+    NOT (272) 32
+    IGUAL (273) 24
+    NO_IGUAL (274) 25
+    MENOR (275) 26
+    MAYOR (276) 27
+    MENOR_IGUAL (277) 28
+    MAYOR_IGUAL (278) 29
+
+
+Nonterminals, with rules where they appear
+
+    $accept (34)
+        on left: 0
+    programa <nodo> (35)
+        on left: 1
+        on right: 0
+    lista_declaraciones <nodo> (36)
+        on left: 2 3
+        on right: 1 3 20
+    declaracion <nodo> (37)
+        on left: 4 5 6 7 8 9 10 11 12
+        on right: 2 3
+    declaracion_entero <nodo> (38)
+        on left: 13
+        on right: 4
+    declaracion_flotante <nodo> (39)
+        on left: 14
+        on right: 5
+    declaracion_cadena <nodo> (40)
+        on left: 15
+        on right: 6
+    asignacion <nodo> (41)
+        on left: 16
+        on right: 7
+    si <nodo> (42)
+        on left: 17 18
+        on right: 8
+    mientras <nodo> (43)
+        on left: 19
+        on right: 9
+    bloque <nodo> (44)
+        on left: 20 21
+        on right: 12 17 18 19
+    imprimir <nodo> (45)
+        on left: 22
+        on right: 10
+    leer <nodo> (46)
+        on left: 23
+        on right: 11
+    condicion <nodo> (47)
+        on left: 24 25 26 27 28 29 30 31 32 33
+        on right: 17 18 19
+    expresion <nodo> (48)
+        on left: 34 35 36
+        on right: 16 22 24 25 26 27 28 29 30 31 32 33 34 35 40
+    termino <nodo> (49)
+        on left: 37 38 39
+        on right: 34 35 36 37 38
+    factor <nodo> (50)
+        on left: 40 41 42 43 44
+        on right: 37 38 39
+
+
+State 0
+
+    0 $accept: • programa $end
+
+    ENTERO    shift, and go to state 1
+    FLOTANTE  shift, and go to state 2
+    CADENA    shift, and go to state 3
+    SI        shift, and go to state 4
+    MIENTRAS  shift, and go to state 5
+    IMPRIMIR  shift, and go to state 6
+    LEER      shift, and go to state 7
+    ID        shift, and go to state 8
+    '{'       shift, and go to state 9
+
+    programa              go to state 10
+    lista_declaraciones   go to state 11
+    declaracion           go to state 12
+    declaracion_entero    go to state 13
+    declaracion_flotante  go to state 14
+    declaracion_cadena    go to state 15
+    asignacion            go to state 16
+    si                    go to state 17
+    mientras              go to state 18
+    bloque                go to state 19
+    imprimir              go to state 20
+    leer                  go to state 21
+
+
+State 1
+
+   13 declaracion_entero: ENTERO • ID
+
+    ID  shift, and go to state 22
+
+
+State 2
+
+   14 declaracion_flotante: FLOTANTE • ID
+
+    ID  shift, and go to state 23
+
+
+State 3
+
+   15 declaracion_cadena: CADENA • ID
+
+    ID  shift, and go to state 24
+
+
+State 4
+
+   17 si: SI • '(' condicion ')' bloque
+   18   | SI • '(' condicion ')' bloque SINO bloque
+
+    '('  shift, and go to state 25
+
+
+State 5
+
+   19 mientras: MIENTRAS • '(' condicion ')' bloque
+
+    '('  shift, and go to state 26
+
+
+State 6
+
+   22 imprimir: IMPRIMIR • '(' expresion ')'
+
+    '('  shift, and go to state 27
+
+
+State 7
+
+   23 leer: LEER • ID
+
+    ID  shift, and go to state 28
+
+
+State 8
+
+   16 asignacion: ID • '=' expresion
+
+    '='  shift, and go to state 29
+
+
+State 9
+
+   20 bloque: '{' • lista_declaraciones '}'
+   21       | '{' • '}'
+
+    ENTERO    shift, and go to state 1
+    FLOTANTE  shift, and go to state 2
+    CADENA    shift, and go to state 3
+    SI        shift, and go to state 4
+    MIENTRAS  shift, and go to state 5
+    IMPRIMIR  shift, and go to state 6
+    LEER      shift, and go to state 7
+    ID        shift, and go to state 8
+    '{'       shift, and go to state 9
+    '}'       shift, and go to state 30
+
+    lista_declaraciones   go to state 31
+    declaracion           go to state 12
+    declaracion_entero    go to state 13
+    declaracion_flotante  go to state 14
+    declaracion_cadena    go to state 15
+    asignacion            go to state 16
+    si                    go to state 17
+    mientras              go to state 18
+    bloque                go to state 19
+    imprimir              go to state 20
+    leer                  go to state 21
+
+
+State 10
+
+    0 $accept: programa • $end
+
+    $end  shift, and go to state 32
+
+
+State 11
+
+    1 programa: lista_declaraciones •
+    3 lista_declaraciones: lista_declaraciones • declaracion
+
+    ENTERO    shift, and go to state 1
+    FLOTANTE  shift, and go to state 2
+    CADENA    shift, and go to state 3
+    SI        shift, and go to state 4
+    MIENTRAS  shift, and go to state 5
+    IMPRIMIR  shift, and go to state 6
+    LEER      shift, and go to state 7
+    ID        shift, and go to state 8
+    '{'       shift, and go to state 9
+
+    $default  reduce using rule 1 (programa)
+
+    declaracion           go to state 33
+    declaracion_entero    go to state 13
+    declaracion_flotante  go to state 14
+    declaracion_cadena    go to state 15
+    asignacion            go to state 16
+    si                    go to state 17
+    mientras              go to state 18
+    bloque                go to state 19
+    imprimir              go to state 20
+    leer                  go to state 21
+
+
+State 12
+
+    2 lista_declaraciones: declaracion •
+
+    $default  reduce using rule 2 (lista_declaraciones)
+
+
+State 13
+
+    4 declaracion: declaracion_entero • ';'
+
+    ';'  shift, and go to state 34
+
+
+State 14
+
+    5 declaracion: declaracion_flotante • ';'
+
+    ';'  shift, and go to state 35
+
+
+State 15
+
+    6 declaracion: declaracion_cadena • ';'
+
+    ';'  shift, and go to state 36
+
+
+State 16
+
+    7 declaracion: asignacion • ';'
+
+    ';'  shift, and go to state 37
+
+
+State 17
+
+    8 declaracion: si •
+
+    $default  reduce using rule 8 (declaracion)
+
+
+State 18
+
+    9 declaracion: mientras •
+
+    $default  reduce using rule 9 (declaracion)
+
+
+State 19
+
+   12 declaracion: bloque •
+
+    $default  reduce using rule 12 (declaracion)
+
+
+State 20
+
+   10 declaracion: imprimir • ';'
+
+    ';'  shift, and go to state 38
+
+
+State 21
+
+   11 declaracion: leer • ';'
+
+    ';'  shift, and go to state 39
+
+
+State 22
+
+   13 declaracion_entero: ENTERO ID •
+
+    $default  reduce using rule 13 (declaracion_entero)
+
+
+State 23
+
+   14 declaracion_flotante: FLOTANTE ID •
+
+    $default  reduce using rule 14 (declaracion_flotante)
+
+
+State 24
+
+   15 declaracion_cadena: CADENA ID •
+
+    $default  reduce using rule 15 (declaracion_cadena)
+
+
+State 25
+
+   17 si: SI '(' • condicion ')' bloque
+   18   | SI '(' • condicion ')' bloque SINO bloque
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    NOT           shift, and go to state 44
+    '('           shift, and go to state 45
+
+    condicion  go to state 46
+    expresion  go to state 47
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 26
+
+   19 mientras: MIENTRAS '(' • condicion ')' bloque
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    NOT           shift, and go to state 44
+    '('           shift, and go to state 45
+
+    condicion  go to state 50
+    expresion  go to state 47
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 27
+
+   22 imprimir: IMPRIMIR '(' • expresion ')'
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 51
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 28
+
+   23 leer: LEER ID •
+
+    $default  reduce using rule 23 (leer)
+
+
+State 29
+
+   16 asignacion: ID '=' • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 52
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 30
+
+   21 bloque: '{' '}' •
+
+    $default  reduce using rule 21 (bloque)
+
+
+State 31
+
+    3 lista_declaraciones: lista_declaraciones • declaracion
+   20 bloque: '{' lista_declaraciones • '}'
+
+    ENTERO    shift, and go to state 1
+    FLOTANTE  shift, and go to state 2
+    CADENA    shift, and go to state 3
+    SI        shift, and go to state 4
+    MIENTRAS  shift, and go to state 5
+    IMPRIMIR  shift, and go to state 6
+    LEER      shift, and go to state 7
+    ID        shift, and go to state 8
+    '{'       shift, and go to state 9
+    '}'       shift, and go to state 53
+
+    declaracion           go to state 33
+    declaracion_entero    go to state 13
+    declaracion_flotante  go to state 14
+    declaracion_cadena    go to state 15
+    asignacion            go to state 16
+    si                    go to state 17
+    mientras              go to state 18
+    bloque                go to state 19
+    imprimir              go to state 20
+    leer                  go to state 21
+
+
+State 32
+
+    0 $accept: programa $end •
+
+    $default  accept
+
+
+State 33
+
+    3 lista_declaraciones: lista_declaraciones declaracion •
+
+    $default  reduce using rule 3 (lista_declaraciones)
+
+
+State 34
+
+    4 declaracion: declaracion_entero ';' •
+
+    $default  reduce using rule 4 (declaracion)
+
+
+State 35
+
+    5 declaracion: declaracion_flotante ';' •
+
+    $default  reduce using rule 5 (declaracion)
+
+
+State 36
+
+    6 declaracion: declaracion_cadena ';' •
+
+    $default  reduce using rule 6 (declaracion)
+
+
+State 37
+
+    7 declaracion: asignacion ';' •
+
+    $default  reduce using rule 7 (declaracion)
+
+
+State 38
+
+   10 declaracion: imprimir ';' •
+
+    $default  reduce using rule 10 (declaracion)
+
+
+State 39
+
+   11 declaracion: leer ';' •
+
+    $default  reduce using rule 11 (declaracion)
+
+
+State 40
+
+   44 factor: ID •
+
+    $default  reduce using rule 44 (factor)
+
+
+State 41
+
+   41 factor: ENTERO_LIT •
+
+    $default  reduce using rule 41 (factor)
+
+
+State 42
+
+   42 factor: FLOTANTE_LIT •
+
+    $default  reduce using rule 42 (factor)
+
+
+State 43
+
+   43 factor: CADENA_LIT •
+
+    $default  reduce using rule 43 (factor)
+
+
+State 44
+
+   32 condicion: NOT • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 54
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 45
+
+   40 factor: '(' • expresion ')'
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 55
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 46
+
+   17 si: SI '(' condicion • ')' bloque
+   18   | SI '(' condicion • ')' bloque SINO bloque
+
+    ')'  shift, and go to state 56
+
+
+State 47
+
+   24 condicion: expresion • IGUAL expresion
+   25          | expresion • NO_IGUAL expresion
+   26          | expresion • MENOR expresion
+   27          | expresion • MAYOR expresion
+   28          | expresion • MENOR_IGUAL expresion
+   29          | expresion • MAYOR_IGUAL expresion
+   30          | expresion • AND expresion
+   31          | expresion • OR expresion
+   33          | expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    AND          shift, and go to state 57
+    OR           shift, and go to state 58
+    IGUAL        shift, and go to state 59
+    NO_IGUAL     shift, and go to state 60
+    MENOR        shift, and go to state 61
+    MAYOR        shift, and go to state 62
+    MENOR_IGUAL  shift, and go to state 63
+    MAYOR_IGUAL  shift, and go to state 64
+    '+'          shift, and go to state 65
+    '-'          shift, and go to state 66
+
+    $default  reduce using rule 33 (condicion)
+
+
+State 48
+
+   36 expresion: termino •
+   37 termino: termino • '*' factor
+   38        | termino • '/' factor
+
+    '*'  shift, and go to state 67
+    '/'  shift, and go to state 68
+
+    $default  reduce using rule 36 (expresion)
+
+
+State 49
+
+   39 termino: factor •
+
+    $default  reduce using rule 39 (termino)
+
+
+State 50
+
+   19 mientras: MIENTRAS '(' condicion • ')' bloque
+
+    ')'  shift, and go to state 69
+
+
+State 51
+
+   22 imprimir: IMPRIMIR '(' expresion • ')'
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+    ')'  shift, and go to state 70
+
+
+State 52
+
+   16 asignacion: ID '=' expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 16 (asignacion)
+
+
+State 53
+
+   20 bloque: '{' lista_declaraciones '}' •
+
+    $default  reduce using rule 20 (bloque)
+
+
+State 54
+
+   32 condicion: NOT expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 32 (condicion)
+
+
+State 55
+
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+   40 factor: '(' expresion • ')'
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+    ')'  shift, and go to state 71
+
+
+State 56
+
+   17 si: SI '(' condicion ')' • bloque
+   18   | SI '(' condicion ')' • bloque SINO bloque
+
+    '{'  shift, and go to state 9
+
+    bloque  go to state 72
+
+
+State 57
+
+   30 condicion: expresion AND • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 73
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 58
+
+   31 condicion: expresion OR • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 74
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 59
+
+   24 condicion: expresion IGUAL • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 75
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 60
+
+   25 condicion: expresion NO_IGUAL • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 76
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 61
+
+   26 condicion: expresion MENOR • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 77
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 62
+
+   27 condicion: expresion MAYOR • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 78
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 63
+
+   28 condicion: expresion MENOR_IGUAL • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 79
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 64
+
+   29 condicion: expresion MAYOR_IGUAL • expresion
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    expresion  go to state 80
+    termino    go to state 48
+    factor     go to state 49
+
+
+State 65
+
+   34 expresion: expresion '+' • termino
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    termino  go to state 81
+    factor   go to state 49
+
+
+State 66
+
+   35 expresion: expresion '-' • termino
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    termino  go to state 82
+    factor   go to state 49
+
+
+State 67
+
+   37 termino: termino '*' • factor
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    factor  go to state 83
+
+
+State 68
+
+   38 termino: termino '/' • factor
+
+    ID            shift, and go to state 40
+    ENTERO_LIT    shift, and go to state 41
+    FLOTANTE_LIT  shift, and go to state 42
+    CADENA_LIT    shift, and go to state 43
+    '('           shift, and go to state 45
+
+    factor  go to state 84
+
+
+State 69
+
+   19 mientras: MIENTRAS '(' condicion ')' • bloque
+
+    '{'  shift, and go to state 9
+
+    bloque  go to state 85
+
+
+State 70
+
+   22 imprimir: IMPRIMIR '(' expresion ')' •
+
+    $default  reduce using rule 22 (imprimir)
+
+
+State 71
+
+   40 factor: '(' expresion ')' •
+
+    $default  reduce using rule 40 (factor)
+
+
+State 72
+
+   17 si: SI '(' condicion ')' bloque •
+   18   | SI '(' condicion ')' bloque • SINO bloque
+
+    SINO  shift, and go to state 86
+
+    $default  reduce using rule 17 (si)
+
+
+State 73
+
+   30 condicion: expresion AND expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 30 (condicion)
+
+
+State 74
+
+   31 condicion: expresion OR expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 31 (condicion)
+
+
+State 75
+
+   24 condicion: expresion IGUAL expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 24 (condicion)
+
+
+State 76
+
+   25 condicion: expresion NO_IGUAL expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 25 (condicion)
+
+
+State 77
+
+   26 condicion: expresion MENOR expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 26 (condicion)
+
+
+State 78
+
+   27 condicion: expresion MAYOR expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 27 (condicion)
+
+
+State 79
+
+   28 condicion: expresion MENOR_IGUAL expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 28 (condicion)
+
+
+State 80
+
+   29 condicion: expresion MAYOR_IGUAL expresion •
+   34 expresion: expresion • '+' termino
+   35          | expresion • '-' termino
+
+    '+'  shift, and go to state 65
+    '-'  shift, and go to state 66
+
+    $default  reduce using rule 29 (condicion)
+
+
+State 81
+
+   34 expresion: expresion '+' termino •
+   37 termino: termino • '*' factor
+   38        | termino • '/' factor
+
+    '*'  shift, and go to state 67
+    '/'  shift, and go to state 68
+
+    $default  reduce using rule 34 (expresion)
+
+
+State 82
+
+   35 expresion: expresion '-' termino •
+   37 termino: termino • '*' factor
+   38        | termino • '/' factor
+
+    '*'  shift, and go to state 67
+    '/'  shift, and go to state 68
+
+    $default  reduce using rule 35 (expresion)
+
+
+State 83
+
+   37 termino: termino '*' factor •
+
+    $default  reduce using rule 37 (termino)
+
+
+State 84
+
+   38 termino: termino '/' factor •
+
+    $default  reduce using rule 38 (termino)
+
+
+State 85
+
+   19 mientras: MIENTRAS '(' condicion ')' bloque •
+
+    $default  reduce using rule 19 (mientras)
+
+
+State 86
+
+   18 si: SI '(' condicion ')' bloque SINO • bloque
+
+    '{'  shift, and go to state 9
+
+    bloque  go to state 87
+
+
+State 87
+
+   18 si: SI '(' condicion ')' bloque SINO bloque •
+
+    $default  reduce using rule 18 (si)

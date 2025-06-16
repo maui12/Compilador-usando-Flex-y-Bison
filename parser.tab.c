@@ -79,10 +79,6 @@ extern int yylex();
 
 NodoAST* raiz_ast = NULL;
 
-#define MAX_VARS 100
-static Simbolo tabla_simbolos[MAX_VARS];
-static int num_simbolos = 0;
-
 void imprimir_valor(Simbolo* s) {
     if (s->tipo == TIPO_ENTERO) {
         printf("%d\n", s->valor.entero);
@@ -96,7 +92,7 @@ void imprimir_valor(Simbolo* s) {
 int ejecutar = 1;
 int ultima_condicion = 0;
 
-#line 100 "parser.tab.c"
+#line 96 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -148,7 +144,7 @@ enum yysymbol_kind_t
   YYSYMBOL_MAYOR = 21,                     /* MAYOR  */
   YYSYMBOL_MENOR_IGUAL = 22,               /* MENOR_IGUAL  */
   YYSYMBOL_MAYOR_IGUAL = 23,               /* MAYOR_IGUAL  */
-  YYSYMBOL_ASSIGN = 24,                    /* ASSIGN  */
+  YYSYMBOL_24_ = 24,                       /* '='  */
   YYSYMBOL_25_ = 25,                       /* '+'  */
   YYSYMBOL_26_ = 26,                       /* '-'  */
   YYSYMBOL_27_ = 27,                       /* '*'  */
@@ -514,7 +510,7 @@ union yyalloc
 #define YYNSTATES  88
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   279
+#define YYMAXUTOK   278
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -534,7 +530,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
       30,    31,    27,    25,     2,    26,     2,    28,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,    29,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    24,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -555,18 +551,18 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
+      15,    16,    17,    18,    19,    20,    21,    22,    23
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    62,    62,    66,    67,    71,    72,    73,    74,    75,
-      76,    77,    78,    79,    82,    88,    94,   100,   105,   110,
-     118,   123,   124,   127,   144,   166,   167,   168,   169,   170,
-     171,   172,   173,   174,   175,   178,   179,   180,   183,   184,
-     185,   188,   189,   193,   197,   198
+       0,    55,    55,    58,    59,    62,    63,    64,    65,    66,
+      67,    68,    69,    70,    72,    77,    82,    87,    97,   102,
+     109,   113,   114,   116,   132,   153,   154,   155,   156,   157,
+     158,   159,   160,   161,   162,   164,   165,   166,   168,   169,
+     170,   172,   173,   177,   181,   182
 };
 #endif
 
@@ -585,8 +581,8 @@ static const char *const yytname[] =
   "\"end of file\"", "error", "\"invalid token\"", "ENTERO", "FLOTANTE",
   "CADENA", "SI", "SINO", "MIENTRAS", "IMPRIMIR", "LEER", "ID",
   "ENTERO_LIT", "FLOTANTE_LIT", "CADENA_LIT", "AND", "OR", "NOT", "IGUAL",
-  "NO_IGUAL", "MENOR", "MAYOR", "MENOR_IGUAL", "MAYOR_IGUAL", "ASSIGN",
-  "'+'", "'-'", "'*'", "'/'", "';'", "'('", "')'", "'{'", "'}'", "$accept",
+  "NO_IGUAL", "MENOR", "MAYOR", "MENOR_IGUAL", "MAYOR_IGUAL", "'='", "'+'",
+  "'-'", "'*'", "'/'", "';'", "'('", "')'", "'{'", "'}'", "$accept",
   "programa", "lista_declaraciones", "declaracion", "declaracion_entero",
   "declaracion_flotante", "declaracion_cadena", "asignacion", "si",
   "mientras", "bloque", "imprimir", "leer", "condicion", "expresion",
@@ -1184,131 +1180,137 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* programa: lista_declaraciones  */
-#line 62 "parser.y"
+#line 55 "parser.y"
                               { raiz_ast = (yyvsp[0].nodo); }
-#line 1190 "parser.tab.c"
+#line 1186 "parser.tab.c"
     break;
 
   case 4: /* lista_declaraciones: lista_declaraciones declaracion  */
-#line 67 "parser.y"
+#line 59 "parser.y"
                                       { (yyval.nodo) = crear_nodo(';', (yyvsp[-1].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1196 "parser.tab.c"
+#line 1192 "parser.tab.c"
     break;
 
   case 5: /* declaracion: declaracion_entero ';'  */
-#line 71 "parser.y"
+#line 62 "parser.y"
                            { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1202 "parser.tab.c"
+#line 1198 "parser.tab.c"
     break;
 
   case 6: /* declaracion: declaracion_flotante ';'  */
-#line 72 "parser.y"
+#line 63 "parser.y"
                                { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1208 "parser.tab.c"
+#line 1204 "parser.tab.c"
     break;
 
   case 7: /* declaracion: declaracion_cadena ';'  */
-#line 73 "parser.y"
+#line 64 "parser.y"
                              { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1214 "parser.tab.c"
+#line 1210 "parser.tab.c"
     break;
 
   case 8: /* declaracion: asignacion ';'  */
-#line 74 "parser.y"
+#line 65 "parser.y"
                      { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1220 "parser.tab.c"
+#line 1216 "parser.tab.c"
     break;
 
   case 11: /* declaracion: imprimir ';'  */
-#line 77 "parser.y"
+#line 68 "parser.y"
                    { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1226 "parser.tab.c"
+#line 1222 "parser.tab.c"
     break;
 
   case 12: /* declaracion: leer ';'  */
-#line 78 "parser.y"
+#line 69 "parser.y"
                { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1232 "parser.tab.c"
+#line 1228 "parser.tab.c"
     break;
 
   case 14: /* declaracion_entero: ENTERO ID  */
-#line 82 "parser.y"
+#line 72 "parser.y"
                               { 
     (yyval.nodo) = crear_nodo('D', crear_hoja(ID, (yyvsp[0].cadena), TIPO_ENTERO), NULL, TIPO_ENTERO);
     agregar_simbolo((yyvsp[0].cadena), TIPO_ENTERO);
 }
-#line 1241 "parser.tab.c"
+#line 1237 "parser.tab.c"
     break;
 
   case 15: /* declaracion_flotante: FLOTANTE ID  */
-#line 88 "parser.y"
+#line 77 "parser.y"
                                   { 
     (yyval.nodo) = crear_nodo('D', crear_hoja(ID, (yyvsp[0].cadena), TIPO_FLOTANTE), NULL, TIPO_FLOTANTE);
     agregar_simbolo((yyvsp[0].cadena), TIPO_FLOTANTE);
 }
-#line 1250 "parser.tab.c"
+#line 1246 "parser.tab.c"
     break;
 
   case 16: /* declaracion_cadena: CADENA ID  */
-#line 94 "parser.y"
+#line 82 "parser.y"
                               { 
     (yyval.nodo) = crear_nodo('D', crear_hoja(ID, (yyvsp[0].cadena), TIPO_CADENA), NULL, TIPO_CADENA);
     agregar_simbolo((yyvsp[0].cadena), TIPO_CADENA);
 }
-#line 1259 "parser.tab.c"
+#line 1255 "parser.tab.c"
     break;
 
-  case 17: /* asignacion: ID ASSIGN expresion  */
-#line 100 "parser.y"
-                                { 
-    (yyval.nodo) = crear_nodo('=', crear_hoja(ID, (yyvsp[-2].cadena), TIPO_DESCONOCIDO), (yyvsp[0].nodo), TIPO_DESCONOCIDO); 
+  case 17: /* asignacion: ID '=' expresion  */
+#line 87 "parser.y"
+                             { 
+    (yyval.nodo) = crear_nodo('=', crear_hoja(ID, (yyvsp[-2].cadena), TIPO_DESCONOCIDO), (yyvsp[0].nodo), TIPO_DESCONOCIDO);
+    /* Verificar que la variable existe */
+    Simbolo* s = buscar_simbolo((yyvsp[-2].cadena));
+    if (!s) {
+        fprintf(stderr, "Error: Variable '%s' no declarada\n", (yyvsp[-2].cadena));
+        exit(EXIT_FAILURE);
+    }
 }
-#line 1267 "parser.tab.c"
+#line 1269 "parser.tab.c"
     break;
 
   case 18: /* si: SI '(' condicion ')' bloque  */
-#line 105 "parser.y"
+#line 97 "parser.y"
                                 { 
     (yyval.nodo) = crear_nodo(SI, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); 
     ultima_condicion = evaluar_condicion((yyvsp[-2].nodo));
     ejecutar = ultima_condicion;
 }
-#line 1277 "parser.tab.c"
+#line 1279 "parser.tab.c"
     break;
 
   case 19: /* si: SI '(' condicion ')' bloque SINO bloque  */
-#line 110 "parser.y"
+#line 102 "parser.y"
                                            { 
     (yyval.nodo) = crear_nodo(SI, (yyvsp[-4].nodo), (yyvsp[-2].nodo), TIPO_DESCONOCIDO);
     (yyval.nodo)->extra = (yyvsp[0].nodo);
     ultima_condicion = evaluar_condicion((yyvsp[-4].nodo));
     ejecutar = ultima_condicion;
 }
-#line 1288 "parser.tab.c"
+#line 1290 "parser.tab.c"
     break;
 
   case 20: /* mientras: MIENTRAS '(' condicion ')' bloque  */
-#line 118 "parser.y"
+#line 109 "parser.y"
                                             { 
     (yyval.nodo) = crear_nodo(MIENTRAS, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); 
 }
-#line 1296 "parser.tab.c"
+#line 1298 "parser.tab.c"
     break;
 
   case 21: /* bloque: '{' lista_declaraciones '}'  */
-#line 123 "parser.y"
+#line 113 "parser.y"
                                     { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1302 "parser.tab.c"
+#line 1304 "parser.tab.c"
     break;
 
   case 22: /* bloque: '{' '}'  */
-#line 124 "parser.y"
+#line 114 "parser.y"
                 { (yyval.nodo) = NULL; }
-#line 1308 "parser.tab.c"
+#line 1310 "parser.tab.c"
     break;
 
   case 23: /* imprimir: IMPRIMIR '(' expresion ')'  */
-#line 127 "parser.y"
+#line 116 "parser.y"
                                      {
     if (ejecutar) {
         if ((yyvsp[-1].nodo)->tipo_nodo == ID) {
@@ -1324,11 +1326,11 @@ yyreduce:
     }
     (yyval.nodo) = crear_nodo(IMPRIMIR, (yyvsp[-1].nodo), NULL, TIPO_DESCONOCIDO);
 }
-#line 1328 "parser.tab.c"
+#line 1330 "parser.tab.c"
     break;
 
   case 24: /* leer: LEER ID  */
-#line 144 "parser.y"
+#line 132 "parser.y"
               { 
     (yyval.nodo) = crear_nodo(LEER, crear_hoja(ID, (yyvsp[0].cadena), TIPO_DESCONOCIDO), NULL, TIPO_DESCONOCIDO); 
     Simbolo* s = buscar_simbolo((yyvsp[0].cadena));
@@ -1349,143 +1351,143 @@ yyreduce:
         }
     }
 }
-#line 1353 "parser.tab.c"
+#line 1355 "parser.tab.c"
     break;
 
   case 25: /* condicion: expresion IGUAL expresion  */
-#line 166 "parser.y"
+#line 153 "parser.y"
                                      { (yyval.nodo) = crear_nodo(IGUAL, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1359 "parser.tab.c"
+#line 1361 "parser.tab.c"
     break;
 
   case 26: /* condicion: expresion NO_IGUAL expresion  */
-#line 167 "parser.y"
+#line 154 "parser.y"
                                         { (yyval.nodo) = crear_nodo(NO_IGUAL, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1365 "parser.tab.c"
+#line 1367 "parser.tab.c"
     break;
 
   case 27: /* condicion: expresion MENOR expresion  */
-#line 168 "parser.y"
+#line 155 "parser.y"
                                      { (yyval.nodo) = crear_nodo(MENOR, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1371 "parser.tab.c"
+#line 1373 "parser.tab.c"
     break;
 
   case 28: /* condicion: expresion MAYOR expresion  */
-#line 169 "parser.y"
+#line 156 "parser.y"
                                      { (yyval.nodo) = crear_nodo(MAYOR, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1377 "parser.tab.c"
+#line 1379 "parser.tab.c"
     break;
 
   case 29: /* condicion: expresion MENOR_IGUAL expresion  */
-#line 170 "parser.y"
+#line 157 "parser.y"
                                            { (yyval.nodo) = crear_nodo(MENOR_IGUAL, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1383 "parser.tab.c"
+#line 1385 "parser.tab.c"
     break;
 
   case 30: /* condicion: expresion MAYOR_IGUAL expresion  */
-#line 171 "parser.y"
+#line 158 "parser.y"
                                            { (yyval.nodo) = crear_nodo(MAYOR_IGUAL, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1389 "parser.tab.c"
+#line 1391 "parser.tab.c"
     break;
 
   case 31: /* condicion: expresion AND expresion  */
-#line 172 "parser.y"
+#line 159 "parser.y"
                                    { (yyval.nodo) = crear_nodo(AND, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1395 "parser.tab.c"
+#line 1397 "parser.tab.c"
     break;
 
   case 32: /* condicion: expresion OR expresion  */
-#line 173 "parser.y"
+#line 160 "parser.y"
                                   { (yyval.nodo) = crear_nodo(OR, (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1401 "parser.tab.c"
+#line 1403 "parser.tab.c"
     break;
 
   case 33: /* condicion: NOT expresion  */
-#line 174 "parser.y"
+#line 161 "parser.y"
                          { (yyval.nodo) = crear_nodo(NOT, (yyvsp[0].nodo), NULL, TIPO_DESCONOCIDO); }
-#line 1407 "parser.tab.c"
+#line 1409 "parser.tab.c"
     break;
 
   case 34: /* condicion: expresion  */
-#line 175 "parser.y"
+#line 162 "parser.y"
                      { (yyval.nodo) = (yyvsp[0].nodo); }
-#line 1413 "parser.tab.c"
+#line 1415 "parser.tab.c"
     break;
 
   case 35: /* expresion: expresion '+' termino  */
-#line 178 "parser.y"
+#line 164 "parser.y"
                                  { (yyval.nodo) = crear_nodo('+', (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1419 "parser.tab.c"
+#line 1421 "parser.tab.c"
     break;
 
   case 36: /* expresion: expresion '-' termino  */
-#line 179 "parser.y"
+#line 165 "parser.y"
                                  { (yyval.nodo) = crear_nodo('-', (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1425 "parser.tab.c"
+#line 1427 "parser.tab.c"
     break;
 
   case 37: /* expresion: termino  */
-#line 180 "parser.y"
+#line 166 "parser.y"
                    { (yyval.nodo) = (yyvsp[0].nodo); }
-#line 1431 "parser.tab.c"
+#line 1433 "parser.tab.c"
     break;
 
   case 38: /* termino: termino '*' factor  */
-#line 183 "parser.y"
+#line 168 "parser.y"
                             { (yyval.nodo) = crear_nodo('*', (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1437 "parser.tab.c"
+#line 1439 "parser.tab.c"
     break;
 
   case 39: /* termino: termino '/' factor  */
-#line 184 "parser.y"
+#line 169 "parser.y"
                             { (yyval.nodo) = crear_nodo('/', (yyvsp[-2].nodo), (yyvsp[0].nodo), TIPO_DESCONOCIDO); }
-#line 1443 "parser.tab.c"
+#line 1445 "parser.tab.c"
     break;
 
   case 40: /* termino: factor  */
-#line 185 "parser.y"
+#line 170 "parser.y"
                 { (yyval.nodo) = (yyvsp[0].nodo); }
-#line 1449 "parser.tab.c"
+#line 1451 "parser.tab.c"
     break;
 
   case 41: /* factor: '(' expresion ')'  */
-#line 188 "parser.y"
+#line 172 "parser.y"
                           { (yyval.nodo) = (yyvsp[-1].nodo); }
-#line 1455 "parser.tab.c"
+#line 1457 "parser.tab.c"
     break;
 
   case 42: /* factor: ENTERO_LIT  */
-#line 189 "parser.y"
+#line 173 "parser.y"
                    { 
           (yyval.nodo) = crear_hoja(ENTERO_LIT, NULL, TIPO_ENTERO);
           (yyval.nodo)->valor.entero = (yyvsp[0].entero);
         }
-#line 1464 "parser.tab.c"
+#line 1466 "parser.tab.c"
     break;
 
   case 43: /* factor: FLOTANTE_LIT  */
-#line 193 "parser.y"
+#line 177 "parser.y"
                      { 
           (yyval.nodo) = crear_hoja(FLOTANTE_LIT, NULL, TIPO_FLOTANTE);
           (yyval.nodo)->valor.flotante = (yyvsp[0].flotante);
         }
-#line 1473 "parser.tab.c"
+#line 1475 "parser.tab.c"
     break;
 
   case 44: /* factor: CADENA_LIT  */
-#line 197 "parser.y"
+#line 181 "parser.y"
                    { (yyval.nodo) = crear_hoja(CADENA_LIT, (yyvsp[0].cadena), TIPO_CADENA); }
-#line 1479 "parser.tab.c"
+#line 1481 "parser.tab.c"
     break;
 
   case 45: /* factor: ID  */
-#line 198 "parser.y"
+#line 182 "parser.y"
            { (yyval.nodo) = crear_hoja(ID, (yyvsp[0].cadena), TIPO_DESCONOCIDO); }
-#line 1485 "parser.tab.c"
+#line 1487 "parser.tab.c"
     break;
 
 
-#line 1489 "parser.tab.c"
+#line 1491 "parser.tab.c"
 
       default: break;
     }
@@ -1678,7 +1680,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 201 "parser.y"
+#line 184 "parser.y"
 
 
 void yyerror(const char *s) {
@@ -1696,27 +1698,4 @@ int main() {
     }
     
     return 0;
-}
-
-Simbolo* buscar_simbolo(const char* nombre) {
-    for (int i = 0; i < num_simbolos; i++) {
-        if (strcmp(tabla_simbolos[i].nombre, nombre) == 0) {
-            return &tabla_simbolos[i];
-        }
-    }
-    return NULL;
-}
-
-void agregar_simbolo(const char* nombre, TipoDato tipo) {
-    if (buscar_simbolo(nombre) {
-        fprintf(stderr, "Error: Variable '%s' ya declarada\n", nombre);
-        exit(EXIT_FAILURE);
-    }
-    if (num_simbolos >= MAX_VARS) {
-        fprintf(stderr, "Error: Tabla de símbolos llena\n");
-        exit(EXIT_FAILURE);
-    }
-    tabla_simbolos[num_simbolos].nombre = strdup(nombre);
-    tabla_simbolos[num_simbolos].tipo = tipo;
-    num_simbolos++;
 }

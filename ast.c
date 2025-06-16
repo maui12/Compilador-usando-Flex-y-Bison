@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Implementación de la tabla de símbolos */
+Simbolo tabla_simbolos[MAX_VARS];
+int num_simbolos = 0;
+
 NodoAST* crear_nodo(int tipo, NodoAST* izq, NodoAST* der, TipoDato tipo_dato) {
     NodoAST* nodo = (NodoAST*)malloc(sizeof(NodoAST));
     if (!nodo) {
@@ -43,6 +47,29 @@ void liberar_ast(NodoAST* nodo) {
     if (nodo->valor.cadena) free(nodo->valor.cadena);
     
     free(nodo);
+}
+
+Simbolo* buscar_simbolo(const char* nombre) {
+    for (int i = 0; i < num_simbolos; i++) {
+        if (strcmp(tabla_simbolos[i].nombre, nombre) == 0) {
+            return &tabla_simbolos[i];
+        }
+    }
+    return NULL;
+}
+
+void agregar_simbolo(const char* nombre, TipoDato tipo) {
+    if (buscar_simbolo(nombre)) {
+        fprintf(stderr, "Error: Variable '%s' ya declarada\n", nombre);
+        exit(EXIT_FAILURE);
+    }
+    if (num_simbolos >= MAX_VARS) {
+        fprintf(stderr, "Error: Tabla de símbolos llena\n");
+        exit(EXIT_FAILURE);
+    }
+    tabla_simbolos[num_simbolos].nombre = strdup(nombre);
+    tabla_simbolos[num_simbolos].tipo = tipo;
+    num_simbolos++;
 }
 
 float evaluar_expresion(NodoAST* expr) {
