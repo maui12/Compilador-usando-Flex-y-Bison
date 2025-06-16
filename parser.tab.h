@@ -63,18 +63,19 @@ extern int yydebug;
     IMPRIMIR = 264,                /* IMPRIMIR  */
     LEER = 265,                    /* LEER  */
     ID = 266,                      /* ID  */
-    ENTERO_LIT = 267,              /* ENTERO_LIT  */
-    FLOTANTE_LIT = 268,            /* FLOTANTE_LIT  */
-    CADENA_LIT = 269,              /* CADENA_LIT  */
-    AND = 270,                     /* AND  */
-    OR = 271,                      /* OR  */
-    NOT = 272,                     /* NOT  */
-    IGUAL = 273,                   /* IGUAL  */
-    NO_IGUAL = 274,                /* NO_IGUAL  */
-    MENOR = 275,                   /* MENOR  */
-    MAYOR = 276,                   /* MAYOR  */
-    MENOR_IGUAL = 277,             /* MENOR_IGUAL  */
-    MAYOR_IGUAL = 278              /* MAYOR_IGUAL  */
+    POTENCIA = 267,                /* POTENCIA  */
+    ENTERO_LIT = 268,              /* ENTERO_LIT  */
+    FLOTANTE_LIT = 269,            /* FLOTANTE_LIT  */
+    CADENA_LIT = 270,              /* CADENA_LIT  */
+    AND = 271,                     /* AND  */
+    OR = 272,                      /* OR  */
+    NOT = 273,                     /* NOT  */
+    IGUAL = 274,                   /* IGUAL  */
+    NO_IGUAL = 275,                /* NO_IGUAL  */
+    MENOR = 276,                   /* MENOR  */
+    MAYOR = 277,                   /* MAYOR  */
+    MENOR_IGUAL = 278,             /* MENOR_IGUAL  */
+    MAYOR_IGUAL = 279              /* MAYOR_IGUAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -90,7 +91,7 @@ union YYSTYPE
     char* cadena;
     struct NodoAST* nodo;
 
-#line 94 "parser.tab.h"
+#line 95 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

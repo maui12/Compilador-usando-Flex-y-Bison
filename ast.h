@@ -42,9 +42,17 @@ void ejecutar_ast(NodoAST* nodo);
 int evaluar_condicion(NodoAST* cond);
 float evaluar_expresion(NodoAST* expr);
 
-/* Tabla de símbolos */
+/* Tabla de simbolos */
 Simbolo* buscar_simbolo(const char* nombre);
 void agregar_simbolo(const char* nombre, TipoDato tipo);
+
+/* Funciones matematicas */
+int calcular_suma(int a, int b);
+int calcular_resta(int a, int b);
+int calcular_multiplicacion(int a, int b);
+int calcular_division(int a, int b);
+int calcular_potencia(int base, int exponente);
+
 
 /* Variables globales */
 extern Simbolo tabla_simbolos[];

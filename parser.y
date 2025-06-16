@@ -30,13 +30,13 @@ int ultima_condicion = 0;
     struct NodoAST* nodo;
 }
 
-%token <cadena> ENTERO FLOTANTE CADENA SI SINO MIENTRAS IMPRIMIR LEER ID
+%token <cadena> ENTERO FLOTANTE CADENA SI SINO MIENTRAS IMPRIMIR LEER ID POTENCIA
 %token <entero> ENTERO_LIT
 %token <flotante> FLOTANTE_LIT
 %token <cadena> CADENA_LIT
 %token AND OR NOT
 %token IGUAL NO_IGUAL MENOR MAYOR MENOR_IGUAL MAYOR_IGUAL
-%token '='
+%token '=' ','
 
 %left OR
 %left AND
@@ -48,7 +48,7 @@ int ultima_condicion = 0;
 %type <nodo> programa lista_declaraciones declaracion expresion condicion
 %type <nodo> declaracion_entero declaracion_flotante declaracion_cadena
 %type <nodo> asignacion si mientras imprimir leer bloque
-%type <nodo> termino factor
+%type <nodo> termino factor potencia_expr
 
 %%
 
@@ -97,7 +97,7 @@ asignacion: ID '=' expresion {
         fprintf(stderr, "Error: Variable '%s' no declarada\n", $1);
         exit(EXIT_FAILURE);
     }
-}
+};
 
 si: SI '(' condicion ')' bloque { 
     $$ = crear_nodo(SI, $3, $5, TIPO_DESCONOCIDO); 
@@ -129,6 +129,10 @@ imprimir: IMPRIMIR '(' expresion ')' {
             printf("%f\n", $3->valor.flotante);
         } else if ($3->tipo_nodo == CADENA_LIT) {
             printf("%s\n", $3->valor.cadena);
+        } else if ($3->tipo_nodo == POTENCIA) {
+            int base = evaluar_expresion($3->izquierda);
+            int exponente = evaluar_expresion($3->derecha);
+            printf("%d\n", calcular_potencia(base, exponente));
         }
     }
     $$ = crear_nodo(IMPRIMIR, $3, NULL, TIPO_DESCONOCIDO);
@@ -166,12 +170,12 @@ condicion: expresion IGUAL expresion { $$ = crear_nodo(IGUAL, $1, $3, TIPO_DESCO
          | NOT expresion { $$ = crear_nodo(NOT, $2, NULL, TIPO_DESCONOCIDO); }
          | expresion { $$ = $1; };
 
-expresion: expresion '+' termino { $$ = crear_nodo('+', $1, $3, TIPO_DESCONOCIDO); }
-         | expresion '-' termino { $$ = crear_nodo('-', $1, $3, TIPO_DESCONOCIDO); }
+expresion: expresion '+' termino { $$ = crear_nodo('+', $1, $3, TIPO_ENTERO); }
+         | expresion '-' termino { $$ = crear_nodo('-', $1, $3, TIPO_ENTERO); }
          | termino { $$ = $1; };
 
-termino: termino '*' factor { $$ = crear_nodo('*', $1, $3, TIPO_DESCONOCIDO); }
-       | termino '/' factor { $$ = crear_nodo('/', $1, $3, TIPO_DESCONOCIDO); }
+termino: termino '*' factor { $$ = crear_nodo('*', $1, $3, TIPO_ENTERO); }
+       | termino '/' factor { $$ = crear_nodo('/', $1, $3, TIPO_ENTERO); }
        | factor { $$ = $1; };
 
 factor: '(' expresion ')' { $$ = $2; }
@@ -184,7 +188,12 @@ factor: '(' expresion ')' { $$ = $2; }
           $$->valor.flotante = $1;
         }
       | CADENA_LIT { $$ = crear_hoja(CADENA_LIT, $1, TIPO_CADENA); }
-      | ID { $$ = crear_hoja(ID, $1, TIPO_DESCONOCIDO); };
+      | ID { $$ = crear_hoja(ID, $1, TIPO_DESCONOCIDO); }
+      | potencia_expr { $$ = $1; };
+
+potencia_expr: POTENCIA '(' expresion ',' expresion ')' {
+    $$ = crear_nodo(POTENCIA, $3, $5, TIPO_ENTERO);
+};
 
 %%
 

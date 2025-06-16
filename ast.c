@@ -98,7 +98,7 @@ float evaluar_expresion(NodoAST* expr) {
             }
             return evaluar_expresion(expr->izquierda) / divisor;
         }
-        case ENTERO_LIT: return expr->valor.entero;
+        case ENTERO_LIT: return (float)expr->valor.entero;
         case FLOTANTE_LIT: return expr->valor.flotante;
         case ID: {
             Simbolo* s = buscar_simbolo(expr->nombre);
@@ -106,7 +106,7 @@ float evaluar_expresion(NodoAST* expr) {
                 fprintf(stderr, "Error: Variable '%s' no declarada\n", expr->nombre);
                 exit(EXIT_FAILURE);
             }
-            if (s->tipo == TIPO_ENTERO) return s->valor.entero;
+            if (s->tipo == TIPO_ENTERO) return (float)s->valor.entero;
             if (s->tipo == TIPO_FLOTANTE) return s->valor.flotante;
             return 0;
         }
@@ -147,20 +147,20 @@ void ejecutar_ast(NodoAST* nodo) {
             agregar_simbolo(nodo->izquierda->nombre, nodo->tipo_dato);
             break;
             
-        case '=': // Asignación
+        case '=':
             {
                 Simbolo* s = buscar_simbolo(nodo->izquierda->nombre);
                 if (!s) {
                     fprintf(stderr, "Error: Variable '%s' no declarada\n", nodo->izquierda->nombre);
                     exit(EXIT_FAILURE);
                 }
-                if (nodo->derecha->tipo_nodo == ENTERO_LIT) {
-                    s->valor.entero = nodo->derecha->valor.entero;
-                } else if (nodo->derecha->tipo_nodo == FLOTANTE_LIT) {
-                    s->valor.flotante = nodo->derecha->valor.flotante;
-                } else if (nodo->derecha->tipo_nodo == CADENA_LIT) {
-                    if (s->valor.cadena) free(s->valor.cadena);
-                    s->valor.cadena = strdup(nodo->derecha->valor.cadena);
+
+                float resultado = evaluar_expresion(nodo->derecha);
+                
+                if (s->tipo == TIPO_ENTERO) {
+                    s->valor.entero = (int)resultado;
+                } else if (s->tipo == TIPO_FLOTANTE) {
+                    s->valor.flotante = resultado;
                 }
             }
             break;
@@ -210,4 +210,34 @@ void ejecutar_ast(NodoAST* nodo) {
             ejecutar_ast(nodo->derecha);
             break;
     }
+}
+
+/* Implementación de funciones matemáticas */
+int calcular_suma(int a, int b) {
+    return a + b;
+}
+
+int calcular_resta(int a, int b) {
+    return a - b;
+}
+
+int calcular_multiplicacion(int a, int b) {
+    return a * b;
+}
+
+int calcular_division(int a, int b) {
+    if (b == 0) {
+        fprintf(stderr, "Error: División por cero\n");
+        exit(1);
+    }
+    return a / b;
+}
+
+int calcular_potencia(int base, int exponente) {
+    int resultado = 1;
+    while (exponente > 0) {
+        resultado = calcular_multiplicacion(resultado, base);
+        exponente--;
+    }
+    return resultado;
 }
