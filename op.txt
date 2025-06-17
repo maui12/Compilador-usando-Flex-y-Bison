@@ -1,0 +1,29 @@
+entero a;
+entero b;
+entero c;
+entero suma;
+entero resta;
+entero multiplicacion;
+entero division;
+entero combinacion;
+entero pot;
+
+a = 10;
+b = 3;
+c = 4;
+
+suma = a + b;
+resta = a - b;
+multiplicacion = a * b;
+division = a / b;
+
+combinacion = (a + b) * c - (a / 2);
+
+pot = potencia(2, 4);
+
+imprimirKeye(suma);
+imprimirKeye(resta);
+imprimirKeye(multiplicacion);
+imprimirKeye(division);
+imprimirKeye(combinacion);
+imprimirKeye(pot);
